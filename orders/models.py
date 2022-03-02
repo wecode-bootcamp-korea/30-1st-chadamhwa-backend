@@ -1,10 +1,9 @@
 from django.db import models
+from chadamhwa.time_stamp_model import TimeStampModel
 
-class Order(models.Model):
-    created_at   = models.DateTimeField(auto_now_add=True)
-    updated_at   = models.DateTimeField(auto_now=True)
-    user         = models.ForeignKey('users.User', on_delete=models.CASCADE)
-    status       = models.ForeignKey('OrderStatus', on_delete=models.CASCADE)
+class Order(TimeStampModel):
+    user   = models.ForeignKey('users.User', on_delete=models.CASCADE)
+    status = models.ForeignKey('OrderStatus', on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'orders'
@@ -18,7 +17,7 @@ class OrderStatus(models.Model):
 class OrderItem(models.Model):
     quantity     = models.PositiveSmallIntegerField(default=1)
     price        = models.DecimalField(max_digits=10, decimal_places=2)
-    order_number = models.PositiveSmallIntegerField()
+    order_number = models.CharField(max_length=200)
     drink        = models.ForeignKey('drinks.Drink', on_delete=models.CASCADE)
     order        = models.ForeignKey('Order', on_delete=models.CASCADE)
 
