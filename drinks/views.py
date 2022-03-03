@@ -41,7 +41,7 @@ class FilteringView(View):
                 elif review_count != 0:                 
                     drink_average_review = sum_rating / review_count
                 drink_and_average_rating[drink.name] = drink_average_review
-            sorted_dict = sorted(drink_and_average_rating.items(), key=lambda x: x[1], reverse=True) #(키,값) 이렇게 정렬
+            sorted_dict = sorted(drink_and_average_rating.items(), key=lambda x: x[1], reverse=True) 
             sorted_key_list= []
             for i in sorted_dict:
                 sorted_key_list.append(i[0])
