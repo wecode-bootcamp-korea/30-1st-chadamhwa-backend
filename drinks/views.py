@@ -9,7 +9,7 @@ from drinks.models import Drink
 class FilteringView(View):  
     def post(self, request):
         data     = json.loads(request.body)
-        method = data["method"]
+        method  = data["method"]
 
         if method == "recent":
             recently_ordered_queryset = Drink.objects.all().order_by('-updated_at')
@@ -19,8 +19,8 @@ class FilteringView(View):
             return JsonResponse({'message':date_ordered_list}, status=200) 
 
         elif method == "price":
-            price_range                  = data["price_range"] 
-            qualified_drinks             = Drink.objects.filter(price__range=(price_range[0],price_range[1]+1))
+            price_range                = data["price_range"] 
+            qualified_drinks           = Drink.objects.filter(price__range=(price_range[0],price_range[1]+1))
             qualified_drinks_in_order = qualified_drinks.order_by('price')
             lst = []
             for i in qualified_drinks_in_order:
@@ -32,7 +32,7 @@ class FilteringView(View):
             drink_and_average_rating = {}
             for drink in drinks:
                 drink_reviews = drink.review_set.all() 
-                review_count = drink_reviews.count() 
+                review_count  = drink_reviews.count() 
                 sum_rating    = 0
                 for review in drink_reviews:       
                     sum_rating += review.rating
@@ -51,7 +51,7 @@ class FilteringView(View):
         elif method == "caffein":
             if data["caffeine"] == "caffeinated":
                 drinks = Drink.objects.all()
-                caffein_drinks = drinks.filter(caffeine__range =(1,10000)).order_by('caffeine')
+                caffein_drinks  = drinks.filter(caffeine__range =(1,10000)).order_by('caffeine')
                 caffein_drinks_list = []
                 for drink in caffein_drinks:
                     caffein_drinks_list.append(drink.name)
@@ -59,7 +59,7 @@ class FilteringView(View):
             
             elif data["caffeine"] == "decaffeinated":
                 drinks = Drink.objects.all()
-                decaffein_drinks = drinks.filter(caffeine = 0)
+                decaffein_drinks    = drinks.filter(caffeine = 0)
                 decaffein_drinks_list = []
                 for drink in decaffein_drinks:
                     decaffein_drinks_list.append(drink.name)
