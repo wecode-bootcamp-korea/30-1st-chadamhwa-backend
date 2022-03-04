@@ -37,7 +37,7 @@ class ProductsView(View):
         
 
         if category:
-            q.add(Q(category__exact= category), Q.AND)   # __exact는 정확히 # 왜 id값만 받는지 나는 이름으로 필터링 하고 싶은데 
+            q.add(Q(category__name= category), Q.AND)   # __exact는 정확히 # 왜 id값만 받는지 나는 이름으로 필터링 하고 싶은데  # __name 으로 바꿔주니 되긴됨
 
         if caffeine:
             if caffeine > 0:
