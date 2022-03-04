@@ -28,38 +28,53 @@ class ProductsView(View):
             return review_count, drink_average_review
 
         drinks = Drink.objects.all()
-        # drinks_list = []
-        # for drink in drinks:
-        #     review_count, average_rating = compute_reviews(drink)
-        #     data_dict = {}
-        #     data_dict["name"] = drink.name
-        #     data_dict["price"] = drink.price
-        #     data_dict["average_rating"] = average_rating
-        #     data_dict["review_count"] = review_count
-        #     data_dict["image"] = drink.image.image_url #일대일은 _set안쓰고 테이블에 연결된 컬럼명으로 바로 연결, 일대일이라 all() 도 안됨
-        #     drinks_list.append(data_dict)
-        # return JsonResponse({'message':drinks_list}, status = 200)
 
-        data = request.GET #쿼리 스트링 전체를 가져옴 
-
-        keys = []
-        for key in data.keys():
-            keys.append(key)
-        
-        values = []
-        for value in data.values():
-            values.append(value)
-        
         q = Q()
 
-        for i in range(len(keys)):
-            kei = keys[i]
-            value = values[i] 
-            q.add(Q(category=value), q.AND)
+        category = request.GET.get("category", None)  
+        caffeine = request.GET.get("caffeine", None)
+        price = request.GET.getlist("price", None)   #리스트 형태로 값이 들어옴 . 따라서 filter 적용시 __in 써줘야 함
+        
 
+        if category:
+            q.add(Q(category__exact= category), Q.AND)   # __exact는 정확히 # 왜 id값만 받는지 나는 이름으로 필터링 하고 싶은데 
+
+        if caffeine:
+            if caffeine > 0:
+                q.add(Q(caffeine__gt=0), Q.AND)  #__gt 는 보다 큼 
+            elif caffeine == 0:
+                q.add(Q(caffeine__exact=0), Q.AND) # id 말고 다른 것으로 
+        
         filtered_drinks = drinks.filter(q)
+        lst = []
+        for i in filtered_drinks:
+            lst.append(i.name)
 
-        return JsonResponse({'message':filtered_drinks[0].name}, status = 200)
+        return JsonResponse({'message':lst}, status = 200)
+
+        # if min_price and max_price:
+        #     q &= Q()
+
+        # cha_type / caffeinated / min_price & max_price
+
+        # keys = []
+        # for key in data.keys():
+        #     keys.append(key)
+        
+        # values = []
+        # for value in data.values():
+        #     values.append(value)
+        
+        # q = Q()
+
+        # for i in range(len(keys)):
+        #     kei = keys[i]
+        #     value = values[i] 
+        #     q.add(Q(category=value), q.AND)
+
+        # filtered_drinks = drinks.filter(q)
+
+        # return JsonResponse({'message':filtered_drinks[0].name}, status = 200)
 
 
 
@@ -81,4 +96,14 @@ class ProductsView(View):
 
                 
 
-        
+        # drinks_list = []
+        # for drink in drinks:
+        #     review_count, average_rating = compute_reviews(drink)
+        #     data_dict = {}
+        #     data_dict["name"] = drink.name
+        #     data_dict["price"] = drink.price
+        #     data_dict["average_rating"] = average_rating
+        #     data_dict["review_count"] = review_count
+        #     data_dict["image"] = drink.image.image_url #일대일은 _set안쓰고 테이블에 연결된 컬럼명으로 바로 연결, 일대일이라 all() 도 안됨
+        #     drinks_list.append(data_dict)
+        # return JsonResponse({'message':drinks_list}, status = 200)
