@@ -11,17 +11,17 @@ class FilteringView(View):
         data     = json.loads(request.body)
         method  = data["method"]
         
-        # class compute_review:
-        #     drink_reviews = drink.review_set.all() 
-        #         review_count  = drink_reviews.count() 
-        #         sum_rating    = 0
-        #         for review in drink_reviews:       
-        #             sum_rating += review.rating
-        #         if review_count == 0:              
-        #             drink_average_review = 0
-        #         elif review_count != 0:                 
-        #             drink_average_review = sum_rating / review_count
-        #         return review_count, drink_average_review
+        def compute_reviews(drink):
+            drink_reviews = drink.review_set.all() 
+            review_count  = drink_reviews.count() 
+            sum_rating    = 0
+            for review in drink_reviews:       
+                sum_rating += review.rating
+            if review_count == 0:              
+                drink_average_review = 0
+            elif review_count != 0:                 
+                drink_average_review = sum_rating / review_count
+            return review_count, drink_average_review
 
 
         if method == "recent":
@@ -31,15 +31,7 @@ class FilteringView(View):
                 data_dict = {}
                 data_dict["name"] = drink.name
                 data_dict["price"] = drink.price
-                drink_reviews = drink.review_set.all() 
-                review_count  = drink_reviews.count() 
-                sum_rating    = 0
-                for review in drink_reviews:       
-                    sum_rating += review.rating
-                if review_count == 0:              
-                    drink_average_review = 0
-                elif review_count != 0:                 
-                    drink_average_review = sum_rating / review_count
+                review_count , drink_average_review = compute_reviews(drink)
                 data_dict["average_rating"] = drink_average_review
                 data_dict["review_count"] = review_count
                 data_ordered_list.append(data_dict)
@@ -54,15 +46,7 @@ class FilteringView(View):
                 data_dict = {}
                 data_dict["name"] = drink.name
                 data_dict["price"]  = drink.price
-                drink_reviews = drink.review_set.all() 
-                review_count  = drink_reviews.count() 
-                sum_rating    = 0
-                for review in drink_reviews:       
-                    sum_rating += review.rating
-                if review_count == 0:              
-                    drink_average_review = 0
-                elif review_count != 0:                 
-                    drink_average_review = sum_rating / review_count
+                review_count , drink_average_review = compute_reviews(drink)
                 data_dict["average_rating"] = drink_average_review
                 data_dict["review_count"] = review_count
                 data_ordered_list.append(data_dict)
@@ -72,15 +56,7 @@ class FilteringView(View):
             drinks = Drink.objects.all()
             drink_and_average_rating = {}
             for drink in drinks:
-                drink_reviews = drink.review_set.all() 
-                review_count  = drink_reviews.count() 
-                sum_rating    = 0
-                for review in drink_reviews:       
-                    sum_rating += review.rating
-                if review_count == 0:              
-                    drink_average_review = 0
-                elif review_count != 0:                 
-                    drink_average_review = sum_rating / review_count
+                review_count , drink_average_review = compute_reviews(drink)
                 drink_and_average_rating[drink.name] = drink_average_review
             sorted_dict = sorted(drink_and_average_rating.items(), key=lambda x: x[1], reverse=True) 
 
@@ -102,7 +78,7 @@ class FilteringView(View):
 
 
         elif method == "caffeine":
-            if data["caffeine"] == "caffeinated":
+            if data["caffeine"] == "True":
                 drinks = Drink.objects.all()
                 caffein_drinks  = drinks.filter(caffeine__range =(1,10000)).order_by('caffeine')
                 data_ordered_list = []
@@ -110,21 +86,13 @@ class FilteringView(View):
                     data_dict = {}
                     data_dict["name"] = drink.name
                     data_dict["price"]  = drink.price
-                    drink_reviews = drink.review_set.all() 
-                    review_count  = drink_reviews.count() 
-                    sum_rating    = 0
-                    for review in drink_reviews:       
-                        sum_rating += review.rating
-                    if review_count == 0:              
-                        drink_average_review = 0
-                    elif review_count != 0:                 
-                        drink_average_review = sum_rating / review_count
+                    review_count , drink_average_review = compute_reviews(drink)
                     data_dict["average_rating"] = drink_average_review
                     data_dict["review_count"] = review_count
                     data_ordered_list.append(data_dict)
                 return JsonResponse({'message':data_ordered_list}, status=200)
             
-            elif data["caffeine"] == "decaffeinated":
+            elif data["caffeine"] == "False":
                 drinks = Drink.objects.all()
                 decaffein_drinks    = drinks.filter(caffeine = 0)
                 data_ordered_list = []
@@ -132,15 +100,7 @@ class FilteringView(View):
                     data_dict = {}
                     data_dict["name"] = drink.name
                     data_dict["price"]  = drink.price
-                    drink_reviews = drink.review_set.all() 
-                    review_count  = drink_reviews.count() 
-                    sum_rating    = 0
-                    for review in drink_reviews:       
-                        sum_rating += review.rating
-                    if review_count == 0:              
-                        drink_average_review = 0
-                    elif review_count != 0:                 
-                        drink_average_review = sum_rating / review_count
+                    review_count , drink_average_review = compute_reviews(drink)
                     data_dict["average_rating"] = drink_average_review
                     data_dict["review_count"] = review_count
                     data_ordered_list.append(data_dict)
