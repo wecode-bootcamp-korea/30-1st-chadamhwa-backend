@@ -7,9 +7,8 @@ from drinks.models import Drink
 # Create your views here.
 
 class FilteringView(View):  
-    def post(self, request):
-        data     = json.loads(request.body)
-        method  = data["method"]
+    def get(self, request):
+        data     = request.GET #쿼리 스트링 전체를 가져옴 
         
         def compute_reviews(drink):
             drink_reviews = drink.review_set.all() 
@@ -24,7 +23,7 @@ class FilteringView(View):
             return review_count, drink_average_review
 
 
-        if method == "recent":
+        if data.get("ordering", None) == "-updated_at":
             recently_ordered_queryset = Drink.objects.all().order_by('-updated_at')
             data_ordered_list = []
             for drink in recently_ordered_queryset:
@@ -37,8 +36,8 @@ class FilteringView(View):
                 data_ordered_list.append(data_dict)
             return JsonResponse({'message':data_ordered_list}, status=200) 
 
-        elif method == "price":
-            price_range                = data["price_range"] 
+        elif data.get("Min_price", None) and data.get("max_price",None):
+            price_range                = [int(data.get("Min_price", None)), int(data.get("max_price",None))]
             qualified_drinks           = Drink.objects.filter(price__range=(price_range[0],price_range[1]+1))
             qualified_drinks_in_order = qualified_drinks.order_by('price')
             data_ordered_list = []
@@ -51,8 +50,38 @@ class FilteringView(View):
                 data_dict["review_count"] = review_count
                 data_ordered_list.append(data_dict)
             return JsonResponse({'message':data_ordered_list}, status=200)
-         
-        elif method == "reviews": 
+
+
+
+        elif data.get("filtering", None) == "caffeinated":
+            drinks = Drink.objects.all()
+            caffein_drinks  = drinks.filter(caffeine__range =(1,10000)).order_by('caffeine')
+            data_ordered_list = []
+            for drink in caffein_drinks:
+                data_dict = {}
+                data_dict["name"] = drink.name
+                data_dict["price"]  = drink.price
+                review_count , drink_average_review = compute_reviews(drink)
+                data_dict["average_rating"] = drink_average_review
+                data_dict["review_count"] = review_count
+                data_ordered_list.append(data_dict)
+            return JsonResponse({'message':data_ordered_list}, status=200)
+            
+        elif data.get("filtering", None) == "decaffeinated":
+            drinks = Drink.objects.all()
+            decaffein_drinks    = drinks.filter(caffeine = 0)
+            data_ordered_list = []
+            for drink in decaffein_drinks:
+                data_dict = {}
+                data_dict["name"] = drink.name
+                data_dict["price"]  = drink.price
+                review_count , drink_average_review = compute_reviews(drink)
+                data_dict["average_rating"] = drink_average_review
+                data_dict["review_count"] = review_count
+                data_ordered_list.append(data_dict)
+            return JsonResponse({'message':data_ordered_list}, status=200)
+
+        elif data.get("ordering", None) == "-ratings":
             drinks = Drink.objects.all()
             drink_and_average_rating = {}
             for drink in drinks:
@@ -73,37 +102,4 @@ class FilteringView(View):
                 data_dict["review_count"] = drink.review_set.all().count()
                 data_ordered_list.append(data_dict)
             return JsonResponse({'message':data_ordered_list}, status=200) 
-
-
-
-
-        elif method == "caffeine":
-            if data["caffeine"] == "True":
-                drinks = Drink.objects.all()
-                caffein_drinks  = drinks.filter(caffeine__range =(1,10000)).order_by('caffeine')
-                data_ordered_list = []
-                for drink in caffein_drinks:
-                    data_dict = {}
-                    data_dict["name"] = drink.name
-                    data_dict["price"]  = drink.price
-                    review_count , drink_average_review = compute_reviews(drink)
-                    data_dict["average_rating"] = drink_average_review
-                    data_dict["review_count"] = review_count
-                    data_ordered_list.append(data_dict)
-                return JsonResponse({'message':data_ordered_list}, status=200)
-            
-            elif data["caffeine"] == "False":
-                drinks = Drink.objects.all()
-                decaffein_drinks    = drinks.filter(caffeine = 0)
-                data_ordered_list = []
-                for drink in decaffein_drinks:
-                    data_dict = {}
-                    data_dict["name"] = drink.name
-                    data_dict["price"]  = drink.price
-                    review_count , drink_average_review = compute_reviews(drink)
-                    data_dict["average_rating"] = drink_average_review
-                    data_dict["review_count"] = review_count
-                    data_ordered_list.append(data_dict)
-                return JsonResponse({'message':data_ordered_list}, status=200)
-
 
