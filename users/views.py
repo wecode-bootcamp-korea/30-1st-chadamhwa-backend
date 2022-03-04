@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-=======
 import json, bcrypt, jwt
 
 from django.http  import JsonResponse
@@ -78,4 +76,3 @@ class SignInView(View):
         except KeyError:
             return JsonResponse({'message':'Key_error'}, status=400)
             
->>>>>>> 60a78a418cb3f2b587331cd979d35d4c038ddcb1
