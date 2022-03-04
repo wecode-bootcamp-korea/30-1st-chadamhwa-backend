@@ -6,7 +6,8 @@ from django.core.exceptions import ValidationError
 
 from my_settings  import SECRET, ALGORITHM
 from users.models import User
-from users.utils  import login_decorator, email_validation, password_validation
+from users.utils  import login_required
+from users.validation import validate_email, validate_password
 
 class SignUpView(View):
     def post(self, request):
@@ -21,8 +22,8 @@ class SignUpView(View):
             
             hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
-            email_validation(email)
-            password_validation(password)
+            validate_email(email)
+            validate_password(password)
 
             if User.objects.filter(email = email).exists():
                 return JsonResponse ({'message' : 'EMAIL_ALREADY_EXIST'}, status=400)
@@ -67,10 +68,10 @@ class SignInView(View):
                 return JsonResponse({'message':'INVALID_USER'}, status=400)
 
             user         = User.objects.get(email=email)
-            payload      = {'user_id':user.id}
+            payload      = {'id':user.id}
             access_token = jwt.encode(payload, SECRET, algorithm=ALGORITHM)
 
-            return JsonResponse({'token': access_token}, status=200)
+            return JsonResponse({'message':'SUCCESS','token': access_token}, status=200)
 
         except KeyError:
             return JsonResponse({'message':'Key_error'}, status=400)
