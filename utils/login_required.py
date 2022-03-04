@@ -1,6 +1,6 @@
 import json, jwt
 
-from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from django.http            import JsonResponse
 
 from users.models           import User
