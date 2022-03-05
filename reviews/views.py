@@ -49,10 +49,9 @@ class CommentView(View):
                     result.append(
                         {
                             'user' : user.username,
-                            'comment' : review.comment,
                             'rating' : review.rating,
+                            'comment' : review.comment,
                             'created_at' : str(review.created_at).split()[0],
-                            'drink' : review.drink.name
                         }
                     )
             return JsonResponse({'review':result}, status=200)
