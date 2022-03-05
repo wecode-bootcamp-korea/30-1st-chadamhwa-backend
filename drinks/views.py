@@ -16,18 +16,6 @@ from users.models import User, Review
 
 class ProductsView(View):
     def get(self, request):
-           
-        def compute_reviews(drink):
-            drink_reviews = drink.review_set.all() 
-            review_count  = drink_reviews.count() 
-            sum_rating    = 0
-            for review in drink_reviews:       
-                sum_rating += review.rating
-            if review_count == 0:              
-                drink_average_review = 0
-            elif review_count != 0:                 
-                drink_average_review = sum_rating / review_count
-            return review_count, drink_average_review
 
         drinks = Drink.objects.all()
 
@@ -57,9 +45,20 @@ class ProductsView(View):
 
         recently = request.GET.get("recently", None)
         rating = request.GET.get("rating", None)     # rating과 recently가 한번에 올 수 는 없음 
+
+        def compute_reviews(drink):
+            drink_reviews = drink.review_set.all() 
+            review_count  = drink_reviews.count() 
+            sum_rating    = 0
+            for review in drink_reviews:       
+                sum_rating += review.rating
+            if review_count == 0:              
+                drink_average_review = 0
+            elif review_count != 0:                 
+                drink_average_review = sum_rating / review_count
+            return review_count, drink_average_review
         
-        if recently:
-            filtered_drinks = filtered_drinks.order_by('-updated_at')
+        def make_whole_data_list(filtered_drinks):
             drink_and_average_rating = {}
             for drink in filtered_drinks:      # 미리 리뷰 갯수와 평점평균 계산해줌(json에 넣어야 하니깐)
                 review_count , drink_average_review = compute_reviews(drink)
@@ -72,6 +71,11 @@ class ProductsView(View):
                 data_dict["average_rating"] = drink_average_review
                 data_dict["review_count"] = review_count
                 whole_data_list.append(data_dict)
+            return whole_data_list
+
+        if recently:
+            filtered_drinks = filtered_drinks.order_by('-updated_at')
+            whole_data_list = make_whole_data_list(filtered_drinks)
 
 
         elif rating:
@@ -94,7 +98,7 @@ class ProductsView(View):
                 whole_data_list.append(data_dict)
 
         else:  #정렬 요청 아무것도 없는 경우
-            pass     
+            whole_data_list = make_whole_data_list(filtered_drinks)
 
         return JsonResponse({'message':whole_data_list}, status = 200)
 
