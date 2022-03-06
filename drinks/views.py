@@ -1,7 +1,5 @@
-import json
-
-from django.http     import JsonResponse
-from django.views   import View
+from django.http       import JsonResponse
+from django.views     import View
 from django.db.models import Q
 
 from drinks.models import Drink
@@ -14,8 +12,8 @@ class ProductsView(View):
 
         q = Q()
 
-        category = request.GET.get("category", None)  
-        caffeine = request.GET.get("caffeine", None)
+        category    = request.GET.get("category", None)  
+        caffeine    = request.GET.get("caffeine", None)
         price_upper = request.GET.get("price_upper", 200000) 
         price_lower = request.GET.get("price_lower", 0) 
     
@@ -24,7 +22,7 @@ class ProductsView(View):
             q.add(Q(category__name__in = categories), Q.AND) 
 
         if caffeine:
-            if caffeine == "yes":
+            if caffeine     == "yes":
                 q.add(Q(caffeine__gt=0), Q.AND)  
             elif caffeine == "no":
                 q.add(Q(caffeine__exact=0), Q.AND) 
@@ -35,7 +33,7 @@ class ProductsView(View):
 
 
         recently = request.GET.get("recently", None)
-        rating = request.GET.get("rating", None)    
+        rating   = request.GET.get("rating", None)    
 
         def compute_reviews(drink):
             drink_reviews = drink.review_set.all() 
