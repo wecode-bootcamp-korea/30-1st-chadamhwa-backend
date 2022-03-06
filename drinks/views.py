@@ -1,4 +1,4 @@
-from django.http       import JsonResponse
+from django.http      import JsonResponse
 from django.views     import View
 from django.db.models import Q
 
@@ -22,7 +22,7 @@ class ProductsView(View):
             q.add(Q(category__name__in = categories), Q.AND) 
 
         if caffeine:
-            if caffeine     == "yes":
+            if caffeine    == "yes":
                 q.add(Q(caffeine__gt=0), Q.AND)  
             elif caffeine == "no":
                 q.add(Q(caffeine__exact=0), Q.AND) 
