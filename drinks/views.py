@@ -12,27 +12,26 @@ class ProductsView(View):
 
         q = Q()
 
-        category    = request.GET.get("category", None)  
+        category    = request.GET.getlist("category", None)  
         caffeine    = request.GET.get("caffeine", None)
         price_upper = request.GET.get("price_upper", 200000) 
         price_lower = request.GET.get("price_lower", 0) 
     
         if category:
-            categories = category.split(',')
+            categories = category[0].split(',')
             q.add(Q(category__name__in = categories), Q.AND) 
 
         if caffeine:
-            if caffeine   == "yes":
-                q.add(Q(caffeine__gt=0), Q.AND)  
-            elif caffeine == "no":
-                q.add(Q(caffeine__exact=0), Q.AND) 
-        
+            q.add(Q(caffeine__gt=0), Q.AND)  
+        elif caffeine == False:
+            q.add(Q(caffeine__exact=0), Q.AND) 
+    
         q.add(Q(price__range = (price_lower, price_upper)),Q.AND)
 
         filtered_drinks = drinks.filter(q) 
 
 
-        recently = request.GET.get("recently", None)
+        newest = request.GET.get("newest", None)
         rating   = request.GET.get("rating", None)    
 
         def compute_reviews(drink):
@@ -60,7 +59,7 @@ class ProductsView(View):
             } for drink in filtered_drinks]
             return whole_data_list
 
-        if recently:
+        if newest:
             filtered_drinks = filtered_drinks.order_by('-updated_at')
             whole_data_list = make_whole_data_list(filtered_drinks)
 
@@ -72,8 +71,8 @@ class ProductsView(View):
                 drink_and_average_rating[drink.name] = drink_average_review
             sorted_dict = sorted(drink_and_average_rating.items(), key=lambda x: x[1], reverse=True)
             sorted_key_list = []
-            for i in sorted_dict:
-                sorted_key_list.append(i[0])
+            for items in sorted_dict:
+                sorted_key_list.append(items[0])
             whole_data_list = []
             for name in sorted_key_list:
                 data_dict = {}
