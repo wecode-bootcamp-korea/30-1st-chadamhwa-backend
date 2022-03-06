@@ -54,9 +54,9 @@ class ProductsView(View):
                 drink_and_average_rating[drink.name] = drink_average_review
             whole_data_list = [{
                 "name"           : drink.name,
-                "price"           : drink.price,
+                "price"          : drink.price,
                 "average_rating" : drink_average_review,
-                "review_count"    : review_count
+                "review_count"   : review_count
             } for drink in filtered_drinks]
             return whole_data_list
 
@@ -79,7 +79,7 @@ class ProductsView(View):
                 data_dict = {}
                 drink = Drink.objects.get(name=name)
                 data_dict["name"]           = drink.name
-                data_dict["price"]           = drink.price
+                data_dict["price"]          = drink.price
                 data_dict["average_rating"] = drink_and_average_rating[name]
                 data_dict["review_count"]   = drink.review_set.all().count()
                 whole_data_list.append(data_dict)
