@@ -3,8 +3,7 @@ from django.views     import View
 from django.db.models import Q
 
 from drinks.models import Drink
-from drinks.utils import compute_reviews, make_whole_data_list
-# Create your views here.
+from drinks.utils import whole_data_list_with_review, compute_reviews
 
 class ProductsView(View):
     def get(self, request):
@@ -22,29 +21,31 @@ class ProductsView(View):
             categories = category[0].split(',')
             q.add(Q(category__name__in = categories), Q.AND) 
 
-        if caffeine:
-            q.add(Q(caffeine__gt=0), Q.AND)  
-        elif caffeine == False:
-            q.add(Q(caffeine__exact=0), Q.AND) 
-    
+        if caffeine != None :
+            if caffeine == True: # 0초과    # if ~ else 둘다 caffein 0 인애들 나옴
+                q.add(Q(caffeine__gt=0), Q.AND)  
+            else:  #
+                q.add(Q(caffeine__exact=0), Q.AND) 
+            
         q.add(Q(price__range = (price_lower, price_upper)),Q.AND)
 
         filtered_drinks = drinks.filter(q) 
 
 
+
         newest = request.GET.get("newest", None)
         rating   = request.GET.get("rating", None)    
 
-
         if newest:
             filtered_drinks = filtered_drinks.order_by('-updated_at')
-            whole_data_list = make_whole_data_list(filtered_drinks)
-
+            whole_data_list = whole_data_list_with_review(filtered_drinks)
+# annotate 메소드 - 가상의 칼럼 -  average
+# 삼항연산자
 
         elif rating:
             drink_and_average_rating = {}
             for drink in filtered_drinks:      
-                review_count , drink_average_review = compute_reviews(drink)
+                drink_average_review = compute_reviews(drink)
                 drink_and_average_rating[drink.name] = drink_average_review
             sorted_dict = sorted(drink_and_average_rating.items(), key=lambda x: x[1], reverse=True)
             sorted_key_list = []
@@ -59,7 +60,7 @@ class ProductsView(View):
             }for name in sorted_key_list ]
 
         else: 
-            whole_data_list = make_whole_data_list(filtered_drinks)
+            whole_data_list = whole_data_list_with_review(filtered_drinks)
 
         return JsonResponse({'message':whole_data_list}, status = 200)
 
