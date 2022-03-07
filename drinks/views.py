@@ -3,6 +3,7 @@ from django.views     import View
 from django.db.models import Q
 
 from drinks.models import Drink
+from drinks.utils import compute_reviews, make_whole_data_list
 # Create your views here.
 
 class ProductsView(View):
@@ -34,30 +35,6 @@ class ProductsView(View):
         newest = request.GET.get("newest", None)
         rating   = request.GET.get("rating", None)    
 
-        def compute_reviews(drink):
-            drink_reviews = drink.review_set.all() 
-            review_count  = drink_reviews.count() 
-            sum_rating    = 0
-            for review in drink_reviews:       
-                sum_rating += review.rating
-            if review_count == 0:              
-                drink_average_review = 0
-            elif review_count != 0:                 
-                drink_average_review = sum_rating / review_count    
-            return review_count, drink_average_review
-        
-        def make_whole_data_list(filtered_drinks):
-            drink_and_average_rating = {}
-            for drink in filtered_drinks:      
-                review_count , drink_average_review = compute_reviews(drink)
-                drink_and_average_rating[drink.name] = drink_average_review
-            whole_data_list = [{
-                "name"           : drink.name,
-                "price"          : drink.price,
-                "average_rating" : drink_average_review,
-                "review_count"   : review_count
-            } for drink in filtered_drinks]
-            return whole_data_list
 
         if newest:
             filtered_drinks = filtered_drinks.order_by('-updated_at')
@@ -73,15 +50,13 @@ class ProductsView(View):
             sorted_key_list = []
             for items in sorted_dict:
                 sorted_key_list.append(items[0])
-            whole_data_list = []
-            for name in sorted_key_list:
-                data_dict = {}
-                drink = Drink.objects.get(name=name)
-                data_dict["name"]           = drink.name
-                data_dict["price"]          = drink.price
-                data_dict["average_rating"] = drink_and_average_rating[name]
-                data_dict["review_count"]   = drink.review_set.all().count()
-                whole_data_list.append(data_dict)
+            whole_data_list = [{
+                "name" : Drink.objects.get(name=name).name ,
+                "price" : Drink.objects.get(name=name).price,
+                "average_rating" : drink_and_average_rating[name],
+                "review_count" : Drink.objects.get(name=name).review_set.all().count(),
+                "image" : Drink.objects.get(name=name).image.image_url
+            }for name in sorted_key_list ]
 
         else: 
             whole_data_list = make_whole_data_list(filtered_drinks)
