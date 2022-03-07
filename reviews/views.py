@@ -17,9 +17,9 @@ class CommentView(View):
             user_id = request.user.id
 
             if Review.objects.filter(user_id=user_id).exists():
-                return JsonResponse({'message':'리뷰는 한번만 쓸수 있음!'}, status=400)
+                return JsonResponse({'message':'리뷰는 한번만 쓸수 있습니다!'}, status=400)
 
-            drink   = Drink.objects.get(name=data['drink']).id
+            drink = Drink.objects.get(name=data['drink']).id
 
             Review.objects.create(
                 user_id  = user_id,
@@ -33,15 +33,14 @@ class CommentView(View):
         except KeyError:
             return JsonResponse({'message':'Key_error'}, status=400)
 
-        except Drink.DoesNotExist:
-            return JsonResponse({'message':'존재하지 않는 음료입니다.'}, status=400)
 
     def get(self, request):
         try:
-            data    = json.loads(request.body)
-            drink_id   = data['drink_id']
-            reviews = Review.objects.all()
-            result  = []
+            data     = json.loads(request.body)
+            drink_id = data['drink_id']
+            reviews  = Review.objects.all()
+            result   = []
+            
             for review in reviews:
                 user = User.objects.get(id=review.user_id)
 
@@ -51,16 +50,14 @@ class CommentView(View):
                             'user' : user.username,
                             'rating' : review.rating,
                             'comment' : review.comment,
-                            'created_at' : str(review.created_at).split()[0],
+                            'created_at' : str(review.created_at).split()[0]
                         }
                     )
             return JsonResponse({'review':result}, status=200)
         
         except KeyError:
             return JsonResponse({'message':'Key_error'}, status=400)
-
-        except json.decoder.JSONDecodeError:
-            return JsonResponse({'message':'json값을 입력하세요'}, status=400)
+            
 
             
 
