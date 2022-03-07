@@ -14,7 +14,7 @@ class ProductsView(View):
         q = Q()
 
         category        = request.GET.getlist("category", None)  
-        is_caffeinated   = request.GET.get("is_caffeinated", None)
+        is_caffeinated  = request.GET.get("is_caffeinated", None)
         price_upper     = request.GET.get("price_upper", 200000) 
         price_lower     = request.GET.get("price_lower", 0) 
     
@@ -34,8 +34,8 @@ class ProductsView(View):
         sort_by = request.GET.get('sort_by', None)
         
         sort_by_options = {
-            "newest"    : "-updated_at",
-            "oldest"    : "updated_at",
+            "newest"        : "-updated_at",
+            "oldest"        : "updated_at",
             "highest_rating" : "-average_rating",
         }
 
@@ -44,7 +44,7 @@ class ProductsView(View):
             "price"          : drink.price,
             "average_rating" : drink.average_rating if drink.average_rating else 0,
             "review_count"   : drink.review_count,
-            "image"       : drink.image.image_url
+            "image"         : drink.image.image_url
         }for drink in filtered_drinks_with_annotation.order_by(sort_by_options[sort_by])]
 
         return JsonResponse({'result':result}, status = 200)
