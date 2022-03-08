@@ -38,8 +38,7 @@ class CartView(View):
             cart, created = Cart.objects.get_or_create(
                 user     = user,
                 drink_id = drink_id,
-                quantity = quantity,
-                
+                quantity = quantity
             )
 
             cart.save()
@@ -67,21 +66,23 @@ class CartView(View):
             
             return JsonResponse({'quantity' : cart.quantity}, status = 200)
 
+        except Cart.DoesNotExist:
+            return JsonResponse({'message' : 'CART_NOT_FOUND'}, status = 400)  
+
         except KeyError:
             return JsonResponse({'message' : 'KEY_ERROR'}, status = 400)
 
     @login_required
-    def delete(self, request):
+    def delete(self, request, cart_id):
         try:
             data = json.loads(request.body)
 
             user = request.user
-            cart = request.GET.get('id')
 
-            if not Cart.objects.filter(user = user, id = cart).exists():
+            if not Cart.objects.filter(user = user, id = cart_id).exists():
                 return JsonResponse({'message' : 'CART_DOES_NOT_EXIST'}, status = 400)
 
-            Cart.objects.filter(user = user, id = cart).delete()
+            Cart.objects.filter(user = user, id = cart_id).delete()
 
             return JsonResponse({'message' : 'CART_DELETED'}, status = 204)
 
