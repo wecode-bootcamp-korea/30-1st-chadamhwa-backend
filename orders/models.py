@@ -24,7 +24,7 @@ class OrderItem(models.Model):
     class Meta:
         db_table = 'order_items'
 
-class Cart(models.Model):
+class Cart(TimeStampModel):
     quantity = models.PositiveSmallIntegerField()
     drink    = models.ForeignKey('drinks.Drink', on_delete=models.CASCADE)
     user     = models.ForeignKey('users.User', on_delete=models.CASCADE)
