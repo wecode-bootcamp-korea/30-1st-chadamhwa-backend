@@ -58,11 +58,11 @@ class MainView(View):
 
         farms_name_dic = {farm.name: [{
 
-            "name":drink.name,
-            "price": drink.price,
-            "average_rating": drink.average_rating,
-            "review_count"   : drink.review_count,
-            "image" : drink.drinkimage_set.all()[0].thumb_img 
+            "name"          :drink.name,
+            "price"           : drink.price,
+            "average_rating" : drink.average_rating,
+            "review_count"  : drink.review_count,
+            "image"         : drink.drinkimage_set.all()[0].thumb_img 
 
         }for drink in farm.drink_set.all().annotate(average_rating = Avg('review__rating'), review_count=Count('review')).order_by('-average_rating')[:2]] for farm in farms}
 
