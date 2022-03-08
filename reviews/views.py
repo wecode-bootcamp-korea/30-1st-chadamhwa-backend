@@ -6,9 +6,10 @@ from utils.login_required import login_required
 from users.models         import Review, User
 from drinks.models        import Drink
 
+
 class CommentView(View):
     @login_required
-    def post(self, request):
+    def post(self, request, drink_id):
         try:
             data    = json.loads(request.body)
 
@@ -16,10 +17,10 @@ class CommentView(View):
             comment = data['comment']
             user_id = request.user.id
 
-            if Review.objects.filter(user_id=user_id).exists():
+            if Review.objects.filter(drink_id=drink_id, user_id=user_id).exists():
                 return JsonResponse({'message':'리뷰는 한번만 쓸수 있습니다!'}, status=400)
 
-            drink = Drink.objects.get(name=data['drink']).id
+            drink = Drink.objects.get(id=drink_id).id
 
             Review.objects.create(
                 user_id  = user_id,
@@ -34,10 +35,8 @@ class CommentView(View):
             return JsonResponse({'message':'Key_error'}, status=400)
 
 
-    def get(self, request):
+    def get(self, request, drink_id):
         try:
-            data     = json.loads(request.body)
-            drink_id = data['drink_id']
             reviews  = Review.objects.all()
             result   = []
             
@@ -58,7 +57,4 @@ class CommentView(View):
         except KeyError:
             return JsonResponse({'message':'Key_error'}, status=400)
             
-
             
-
-
