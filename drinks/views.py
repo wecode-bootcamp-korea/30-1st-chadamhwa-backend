@@ -18,7 +18,7 @@ class ProductsView(View):
         is_caffeinated  = request.GET.get("is_caffeinated", None)
         price_upper     = request.GET.get("price_upper", 200000) 
         price_lower     = request.GET.get("price_lower", 0)
-        search_query   = request.GET.get('search_query', None) 
+        search_query    = request.GET.get('search_query', None) 
 
         if search_query:
             q.add(Q(name__contains=search_query), Q.AND)
