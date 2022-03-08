@@ -383,6 +383,6 @@ zsdoc/data
 
 my_settings.py
 
-chadamhwa_sample.csv
+db_upload.py
+*.csv
 
-db_uploader.py
