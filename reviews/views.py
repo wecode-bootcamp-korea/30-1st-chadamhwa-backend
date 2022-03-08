@@ -16,18 +16,27 @@ class CommentView(View):
             rating  = data['rating']
             comment = data['comment']
             user_id = request.user.id
-
-            if Review.objects.filter(drink_id=drink_id, user_id=user_id).exists():
-                return JsonResponse({'message':'리뷰는 한번만 쓸수 있습니다!'}, status=400)
-
             drink = Drink.objects.get(id=drink_id).id
 
-            Review.objects.create(
+            # if Review.objects.filter(drink_id=drink_id, user_id=user_id).exists():
+            #     return JsonResponse({'message':'리뷰는 한번만 쓸수 있습니다!'}, status=400)
+
+            Review.objects.update_or_create(
                 user_id  = user_id,
                 drink_id = drink,
-                rating   = rating,
-                comment  = comment
+                rating   = rating, 
+                comment  = comment, 
+                defaults = {'rating': rating, 'comment': comment}
             )
+
+            # drink = Drink.objects.get(id=drink_id).id
+
+            # Review.objects.create(
+            #     user_id  = user_id,
+            #     drink_id = drink,
+            #     rating   = rating,
+            #     comment  = comment
+            # )
 
             return JsonResponse({'message':'review_posting_success'}, status=200)
         
