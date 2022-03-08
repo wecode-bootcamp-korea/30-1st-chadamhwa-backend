@@ -1,5 +1,0 @@
-weight,caffeine,price,name,farm_name,farm_image,category_name,drink_image,rating,comment,email,password,username,point,address,quantity
-23,2,2000,인삼차,보령농장,www.1234.com,뿌리차,www.drinkimage1.com,4,핵존맛,1park2@daum.com,qlalfqjsgh@1,영서,,주소1,10
-33,3,3000,옥수수수염차,울산농장,www.2345.com,뿌리차,www.drinkimage2.com,5,맛있어요,1park3@daum.com,qlalfqjsgh@2,영선,,주소2,20
-44,4,4000,깻잎차,깻잎농장,www.3456.com,잎사귀차,www.drinkimage3.com,3,그냥그럼,1park4@daum.com,qlalfqjsgh@3,영석,,주소3,30
-55,0,5000,마차,마산농장,www.5678.com,줄기차,www.drinkimage4.com,2,별로에요,1park5@daum.com,qlalfqjsgh@4,영숙,,주소4,40
