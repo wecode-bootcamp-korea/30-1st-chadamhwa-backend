@@ -58,7 +58,7 @@ class MainView(View):
 
         farms_name_dic = {farm.name: [{
 
-            "name"           :drink.name,
+            "name"           :  drink.name,
             "price"          : drink.price,
             "average_rating" : drink.average_rating,
             "review_count"   : drink.review_count,
