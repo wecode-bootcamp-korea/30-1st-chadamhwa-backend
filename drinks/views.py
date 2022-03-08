@@ -10,8 +10,6 @@ from drinks.models import Drink
 class ProductsView(View):
     def get(self, request):
         
-        drinks = Drink.objects.all()
-
         q = Q()
 
         category        = request.GET.getlist("category", None)  
@@ -32,9 +30,7 @@ class ProductsView(View):
 
         q.add(Q(price__range = (price_lower, price_upper)),Q.AND)
 
-        filtered_drinks = drinks.filter(q) 
-
-        filtered_drinks_with_annotation = filtered_drinks.annotate(average_rating = Avg('review__rating'), review_count=Count('review'))
+        drinks = Drink.objects.filter(q).annotate(average_rating = Avg('review__rating'), review_count=Count('review'))
 
         sort_by = request.GET.get('sort_by', None)
         
@@ -49,8 +45,8 @@ class ProductsView(View):
             "price"          : drink.price,
             "average_rating" : drink.average_rating if drink.average_rating else 0,
             "review_count"   : drink.review_count,
-            "image"          : drink.image.image_url
-        }for drink in filtered_drinks_with_annotation.order_by(sort_by_options[sort_by])]
+            "image"          : drink.drinkimage_set.all()[0].thumb_img 
+        }for drink in drinks.order_by(sort_by_options[sort_by])]
 
         return JsonResponse({'result':result}, status = 200)
 
