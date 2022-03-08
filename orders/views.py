@@ -22,16 +22,14 @@ class CartView(View):
             }
             for cart in carts]
 
-        return JsonResponse({'result' : result}, status = 201)
+        return JsonResponse({'result' : result}, status = 200)
 
     @login_required
-    def post(self, request):
+    def post(self, request, drink_id):
         try:
             data = json.loads(request.body)
             
             user     = request.user
-            # 경래님: drink_id는 path parameter 형태로 받아보는 기획은 어떨까요?
-            drink_id = data['drink_id']
             quantity = data['quantity']
 
             if not Drink.objects.filter(id = drink_id).exists():
@@ -40,12 +38,13 @@ class CartView(View):
             cart, created = Cart.objects.get_or_create(
                 user     = user,
                 drink_id = drink_id,
-                quantity = quantity
+                quantity = quantity,
+                
             )
 
             cart.save()
 
-            return JsonResponse({'message' : 'CART_CREATED'}, status = 200)
+            return JsonResponse({'message' : 'CART_CREATED'}, status = 201)
 
         except json.JSONDecodeError:
             return JsonResponse({'message' : 'JSON_DECODE_ERROR'}, status = 400)  
@@ -61,13 +60,12 @@ class CartView(View):
         try:
             data = json.loads(request.body)
 
-            cart          = request.GET.get('cart_id')
-            quantity      = data['quantity']
-            cart.quantity = quantity['data']
+            cart          = Cart.objects.get(id = data['cart_id'])
+            cart.quantity = data['quantity']
             
-            cart.save
+            cart.save()
             
-            return JsonResponse({'quantity' : cart.quantity}, status = 201)
+            return JsonResponse({'quantity' : cart.quantity}, status = 200)
 
         except KeyError:
             return JsonResponse({'message' : 'KEY_ERROR'}, status = 400)
@@ -86,25 +84,6 @@ class CartView(View):
             Cart.objects.filter(user = user, id = cart).delete()
 
             return JsonResponse({'message' : 'CART_DELETED'}, status = 204)
-
-        except KeyError:
-            return JsonResponse({'message' : 'KEY_ERROR'}, status = 400)
-
-class OrderView(View):
-    @login_required
-    def post(self, request):
-        try:
-            data = json.loads(request.body)
-            
-            drink_id     = data['drink_id']
-            quantity     = data['quantity']
-            users        = request.user
-            points       = int(users.point)
-            drinks       = Drink.objects.get(id=drink_id)
-            total_price  = int(drinks.price) * int(quantity)
-            remain_point = points - total_price
-
-
 
         except KeyError:
             return JsonResponse({'message' : 'KEY_ERROR'}, status = 400)
