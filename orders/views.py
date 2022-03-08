@@ -30,6 +30,7 @@ class CartView(View):
             data = json.loads(request.body)
             
             user     = request.user
+            # 경래님: drink_id는 path parameter 형태로 받아보는 기획은 어떨까요?
             drink_id = data['drink_id']
             quantity = data['quantity']
 
@@ -94,8 +95,16 @@ class OrderView(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
-
             
+            drink_id     = data['drink_id']
+            quantity     = data['quantity']
+            users        = request.user
+            points       = int(users.point)
+            drinks       = Drink.objects.get(id=drink_id)
+            total_price  = int(drinks.price) * int(quantity)
+            remain_point = points - total_price
+
+
 
         except KeyError:
             return JsonResponse({'message' : 'KEY_ERROR'}, status = 400)
