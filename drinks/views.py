@@ -3,7 +3,7 @@ from django.views     import View
 from django.db.models import Q, Avg, Count
 
 
-from drinks.models import Drink
+from drinks.models import Drink, Farm
         
       
 
@@ -51,5 +51,19 @@ class ProductsView(View):
         return JsonResponse({'result':result}, status = 200)
 
 
+class MainView(View):
+    def get(self, request):
+        
+        farms = Farm.objects.all()
 
+        farms_name_dic = {farm.name: [{
 
+            "name":drink.name,
+            "price": drink.price,
+            "average_rating": drink.average_rating,
+            "review_count"   : drink.review_count,
+            "image" : drink.drinkimage_set.all()[0].thumb_img 
+
+        }for drink in farm.drink_set.all().annotate(average_rating = Avg('review__rating'), review_count=Count('review')).order_by('-average_rating')[:2]] for farm in farms}
+
+        return JsonResponse({'result':farms_name_dic}, status = 200)
