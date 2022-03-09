@@ -38,6 +38,7 @@ class ProductView(View):
         }
 
         result = [{
+            "id"              : drink.id,
             "name"           : drink.name,
             "price"          : drink.price,
             "average_rating" : drink.average_rating if drink.average_rating else 0,
@@ -57,7 +58,7 @@ class FarmProductView(View):
         limit = request.GET.get("limit", 4)
 
         farms_name_dic = {farm.name: [{
-
+            "id"             : drink.id,
             "name"           : drink.name,
             "price"          : drink.price,
             "average_rating" : drink.average_rating,
