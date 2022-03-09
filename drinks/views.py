@@ -51,7 +51,7 @@ class ProductsView(View):
         return JsonResponse({'result':result}, status = 200)
 
 
-class MainView(View):
+class FarmProductsView(View):
     def get(self, request):
         
         farms = Farm.objects.all()
@@ -64,6 +64,6 @@ class MainView(View):
             "review_count"   : drink.review_count,
             "image"          : drink.drinkimage_set.all()[0].thumb_img 
 
-        }for drink in farm.drink_set.all().annotate(average_rating = Avg('review__rating'), review_count=Count('review')).order_by('-average_rating')[:2]] for farm in farms}
+        }for drink in farm.drink_set.all().annotate(average_rating = Avg('review__rating'), review_count=Count('review')).order_by('-average_rating')[:4]] for farm in farms}
 
         return JsonResponse({'result':farms_name_dic}, status = 200)
