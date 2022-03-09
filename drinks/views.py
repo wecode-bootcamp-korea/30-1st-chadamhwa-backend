@@ -53,7 +53,8 @@ class FarmProductView(View):
         
         farms = Farm.objects.all()
         
-        slicing_num = 4
+        offset = request.GET.get("offset", None)
+        limit = request.GET.get("limit", None)
 
         farms_name_dic = {farm.name: [{
 
@@ -63,6 +64,6 @@ class FarmProductView(View):
             "review_count"   : drink.review_count,
             "image"          : drink.drinkimage_set.all().first().thumb_img 
 
-        }for drink in farm.drink_set.all().annotate(average_rating = Avg('review__rating'), review_count=Count('review')).order_by('-average_rating')[:slicing_num]] for farm in farms}
+        }for drink in farm.drink_set.all().annotate(average_rating = Avg('review__rating'), review_count=Count('review')).order_by('-average_rating')[offset:offset+limit]] for farm in farms}
 
         return JsonResponse({'result':farms_name_dic}, status = 200)
