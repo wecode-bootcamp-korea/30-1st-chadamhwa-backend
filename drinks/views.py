@@ -53,8 +53,8 @@ class FarmProductView(View):
         
         farms = Farm.objects.all()
         
-        offset = request.GET.get("offset", None)
-        limit = request.GET.get("limit", None)
+        offset = request.GET.get("offset", 0)
+        limit = request.GET.get("limit", 4)
 
         farms_name_dic = {farm.name: [{
 
