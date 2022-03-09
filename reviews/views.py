@@ -23,16 +23,6 @@ class CommentView(View):
                 defaults = {'comment':comment, 'rating':rating}
             )
 
-            """
-            user.id(1) = user_id(1) -->      T  T
-            drink_id(2) = drink(2),  -->     T  T 
-            
-            defaults = {'comment': comment} 무시 무시  --> 비교할 때만
-                                            생성 수정  --> default 도 포함
-            디폴트를 제외한 값을 비교했을 때 하나라도 F 다 --> 생성
-                                     모두 다 T 다 ---> 수정
-            """
-
             return JsonResponse({'message':'review_posting_success'}, status=200)
         
         except KeyError:
@@ -40,20 +30,16 @@ class CommentView(View):
 
 
     def get(self, request, drink_id):
-        try:
-            reviews = Review.objects.all()
-            result  = [
-                {
-                    'user' : User.objects.get(id=review.user_id).username,
-                    'rating' : review.rating,
-                    'comment' : review.comment,
-                    'created_at' : str(review.created_at).split()[0]
-                } 
-                    for review in reviews if review.drink.id == drink_id
-            ]
+        reviews = Review.objects.all()
+        result  = [
+            {
+                'user' : User.objects.get(id=review.user_id).username,
+                'rating' : review.rating,
+                'comment' : review.comment,
+                'created_at' : str(review.created_at).split()[0]
+            } 
+                for review in reviews if review.drink.id == drink_id
+        ]
+    
+        return JsonResponse({'review':result}, status=200)
         
-            return JsonResponse({'review':result}, status=200)
-        
-        except KeyError:
-            return JsonResponse({'message':'Key_error'}, status=400)
-            
