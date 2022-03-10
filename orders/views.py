@@ -25,12 +25,13 @@ class CartView(View):
         return JsonResponse({'result' : result}, status = 200)
 
     @login_required
-    def post(self, request, drink_id):
+    def post(self, request):
         try:
             data = json.loads(request.body)
             
             user     = request.user
             quantity = data['quantity']
+            drink_id = data['drink_id']
 
             if not Drink.objects.filter(id = drink_id).exists():
                 return JsonResponse({'message' : 'DRINK_NOT_EXIST'}, status = 400)
@@ -64,7 +65,7 @@ class CartView(View):
             
             cart.save()
             
-            return JsonResponse({'quantity' : cart.quantity}, status = 200)
+            return JsonResponse({'message' : 'ITEM_QUANTITY_CHANGED', 'quantity' : cart.quantity}, status = 200)
 
         except Cart.DoesNotExist:
             return JsonResponse({'message' : 'CART_NOT_FOUND'}, status = 400)  
