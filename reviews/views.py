@@ -31,17 +31,14 @@ class CommentView(View):
 
 
     def get(self, request, drink_id):
-        reviews = Review.objects.all()
+        reviews = Review.objects.filter(drink_id=drink_id)
 
-        result = [
-            {
-                'user'              : User.objects.get(id=review.user_id).username,
+        result = [{
+                'user'              : review.user.username,
                 'rating'            : review.rating,
                 'comment'           : review.comment,
                 'created_at'        : review.created_at.date(),
-            } 
-                for review in reviews.filter(drink_id=drink_id)
-        ]
+            } for review in reviews]
     
         return JsonResponse({'review':result}, status=200)
     

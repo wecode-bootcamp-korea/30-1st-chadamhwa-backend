@@ -6,8 +6,6 @@ from django.db.models import Q, Avg, Count
 from drinks.models import Drink
 from users.models  import Review
         
-      
-
 class ProductsView(View):
     def get(self, request):
         
@@ -60,18 +58,21 @@ class ProductDetailView(View):
         comment_rating = Review.objects.filter(drink_id=drink_id)
 
         result = [
-            {
-                'thumb_img'         : img.thumb_img,
-                'detail_img'        : img.detail_img,
-                'drink_name'        : drinkid.name,
-                'drink_description' : drinkid.description,
-                'rating_averagy'    : comment_rating.aggregate(Avg('rating')),
-                'comment_count'     : comment_rating.count(),
-                'category'          : drinkid.category.name,
-                'caffeine'          : drinkid.caffeine,
-                'weight'            : drinkid.weight,
-                'price'             : drinkid.price  
-            } 
+                {
+                    'thumb_img'         : img.thumb_img,
+                    'detail_img'        : img.detail_img,
+                },
+
+                {   
+                    'drink_name'        : drinkid.name,
+                    'drink_description' : drinkid.description,
+                    'rating_averagy'    : comment_rating.aggregate(Avg('rating')),
+                    'comment_count'     : comment_rating.count(),
+                    'category'          : drinkid.category.name,
+                    'caffeine'          : drinkid.caffeine,
+                    'weight'            : drinkid.weight,
+                    'price'             : drinkid.price
+                }   
         ]
     
         return JsonResponse({'review':result}, status=200)
