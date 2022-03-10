@@ -4,14 +4,10 @@ from django.db.models import Q, Avg, Count
 
 from drinks.models import Drink, Farm
 
-<<<<<<< HEAD
-
 from users.models  import Review
         
-
-=======
+        
 class ProductView(View):
->>>>>>> c00f0a085a7caef66738503bfdc54894aa40c2ed
     def get(self, request):
         
         q = Q()
@@ -56,9 +52,6 @@ class ProductView(View):
         return JsonResponse({'result':result}, status = 200)
 
 
-<<<<<<< HEAD
-
-=======
 class FarmProductView(View):
     def get(self, request):
                 
@@ -92,10 +85,8 @@ class FarmProductView(View):
         }
 
         return JsonResponse({'result':result}, status = 200)
->>>>>>> c00f0a085a7caef66738503bfdc54894aa40c2ed
 
   
-<<<<<<< HEAD
 class ProductDetailView(View):
       def get(self, request, drink_id):
 
@@ -123,7 +114,3 @@ class ProductDetailView(View):
     
         return JsonResponse({'review':result}, status=200)
     
-=======
-  
-  
->>>>>>> c00f0a085a7caef66738503bfdc54894aa40c2ed
