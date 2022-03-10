@@ -61,15 +61,15 @@ class FarmProductView(View):
 
         result = {
                 farm.name : {
-                    "farm_id"   : farm.id,
-                    "farm_name" : farm.name,
+                    "farm_id"    : farm.id,
+                    "farm_name"  : farm.name,
                         "drinks" : [{
-                            "id"      : drink.id,
-                            "name"     : drink.name,
-                            "price"      : drink.price,
+                            "id"             : drink.id,
+                            "name"           : drink.name,
+                            "price"          : drink.price,
                             "average_rating" : drink.average_rating,
-                            "review_count"    : drink.review_count,
-                            "image" : drink.drinkimage_set.all().first().thumb_img,
+                            "review_count"   : drink.review_count,
+                            "image"          : drink.drinkimage_set.all().first().thumb_img,
                     }  for drink in farm.drink_set.all().annotate(average_rating = Avg('review__rating'), review_count=Count('review'))
                         .order_by(order_method)[offset:offset+limit]]
             } for farm in farms
