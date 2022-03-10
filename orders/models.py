@@ -1,6 +1,6 @@
 from django.db import models
 
-from utils import TimeStampModel
+from utils.time_stamp_model import TimeStampModel
 
 class Order(TimeStampModel):
     user   = models.ForeignKey('users.User', on_delete=models.CASCADE)
