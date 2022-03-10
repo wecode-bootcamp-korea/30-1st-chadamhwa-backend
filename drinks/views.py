@@ -6,7 +6,7 @@ from drinks.models import Drink, Farm
 
 from users.models  import Review
         
-        
+
 class ProductView(View):
     def get(self, request):
         
@@ -90,27 +90,26 @@ class FarmProductView(View):
 class ProductDetailView(View):
       def get(self, request, drink_id):
 
-        drinkid        = Drink.objects.get(id=drink_id)
-        img            = drinkid.drinkimage_set.get(drink_id=drink_id)
+        drink          = Drink.objects.get(id=drink_id)
+        img            = drink.drinkimage_set.get(drink_id=drink_id)
         comment_rating = Review.objects.filter(drink_id=drink_id)
        
-        result = [
-                {
-                    'thumb_img'         : img.thumb_img,
-                    'detail_img'        : img.detail_img,
+        result = {
+                    "image" : {
+                        'thumbnail' : img.thumb_img,
+                        'detail'    : img.detail_img,
                 },
-
-                {   
-                    'drink_name'        : drinkid.name,
-                    'drink_description' : drinkid.description,
-                    'rating_averagy'    : comment_rating.aggregate(Avg('rating')),
-                    'comment_count'     : comment_rating.count(),
-                    'category'          : drinkid.category.name,
-                    'caffeine'          : drinkid.caffeine,
-                    'weight'            : drinkid.weight,
-                    'price'             : drinkid.price
-                }   
-        ]
+                    "drink" : {   
+                        'name'        : drink.name,
+                        'description' : drink.description,
+                        'category'    : drink.category.name,
+                        'caffeine'    : drink.caffeine,
+                        'weight'      : drink.weight,
+                        'price'       : drink.price
+                },
+                    'rating_average' : comment_rating.aggregate(Avg('rating')),
+                    'comment_count'  : comment_rating.count()
+            }
     
         return JsonResponse({'review':result}, status=200)
     
