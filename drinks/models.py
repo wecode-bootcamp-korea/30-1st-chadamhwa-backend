@@ -1,5 +1,6 @@
 from django.db import models
-from chadamhwa.time_stamp_model import TimeStampModel
+
+from utils import TimeStampModel
 
 class Drink(TimeStampModel):
     name        = models.CharField(max_length=45)
