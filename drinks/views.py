@@ -2,12 +2,9 @@ from django.http      import JsonResponse
 from django.views     import View
 from django.db.models import Q, Avg, Count
 
+from drinks.models import Drink, Farm
 
-from drinks.models import Drink
-        
-      
-
-class ProductsView(View):
+class ProductView(View):
     def get(self, request):
         
         q = Q()
@@ -41,15 +38,51 @@ class ProductsView(View):
         }
 
         result = [{
+            "id"              : drink.id,
             "name"           : drink.name,
             "price"          : drink.price,
             "average_rating" : drink.average_rating if drink.average_rating else 0,
             "review_count"   : drink.review_count,
-            "image"          : drink.drinkimage_set.all()[0].thumb_img 
+            "image"          : drink.drinkimage_set.all().first().thumb_img 
         }for drink in drinks.order_by(sort_by_options[sort_by])]
 
         return JsonResponse({'result':result}, status = 200)
 
 
+class FarmProductView(View):
+    def get(self, request):
+                
+        offset          = request.GET.get("offset", 0)
+        limit           = request.GET.get("limit", 4)
+        order_method    = request.GET.get("order_method", "highest_rating")
+
+        order_method_options = {
+            "highest_rating" : "-average_rating",
+            "newest"         : "-updated_at",
+            "oldest"         : "updated_at"  
+        }
+
+        farms = Farm.objects.all()
+
+        result = {
+                "farm" : [{
+                    "id"      : farm.id,
+                    "name"    : farm.name,
+                    "drinks"  : [
+                        {
+                            "id"             : drink.id,
+                            "name"           : drink.name,
+                            "price"          : drink.price,
+                            "average_rating" : drink.average_rating,
+                            "review_count"   : drink.review_count,
+                            "image"          : drink.drinkimage_set.all().first().thumb_img,
+                        }  for drink in farm.drink_set.all().annotate(average_rating = Avg('review__rating'), review_count=Count('review'))\
+                            .order_by(order_method_options[order_method])[offset:offset+limit]]
+            } for farm in farms]
+        }
+
+        return JsonResponse({'result':result}, status = 200)
 
 
+  
+  
