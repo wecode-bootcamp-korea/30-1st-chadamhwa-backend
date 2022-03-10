@@ -52,10 +52,15 @@ class ProductView(View):
 class FarmProductView(View):
     def get(self, request):
                 
-        offset = request.GET.get("offset", 0)
-        limit = request.GET.get("limit", 4)
+        offset          = request.GET.get("offset", 0)
+        limit           = request.GET.get("limit", 4)
+        order_method    = request.GET.get("order_method", "highest_rating")
 
-        order_method = "-average_rating"
+        order_method_options = {
+            "highest_rating" : "-average_rating",
+            "newest"         : "-updated_at",
+            "oldest"         : "updated_at"  
+        }
 
         farms = Farm.objects.all()
 
@@ -72,7 +77,7 @@ class FarmProductView(View):
                             "review_count"   : drink.review_count,
                             "image"          : drink.drinkimage_set.all().first().thumb_img,
                         }  for drink in farm.drink_set.all().annotate(average_rating = Avg('review__rating'), review_count=Count('review'))\
-                            .order_by(order_method)[offset:offset+limit]]
+                            .order_by(order_method_options[order_method])[offset:offset+limit]]
             } for farm in farms]
         }
 
