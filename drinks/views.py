@@ -66,9 +66,9 @@ class FarmProductView(View):
 
         result = {
                 "farm" : [{
-                    "id"       : farm.id,
-                    "name"  : farm.name,
-                    "drinks" : [
+                    "id"      : farm.id,
+                    "name"    : farm.name,
+                    "drinks"  : [
                         {
                             "id"             : drink.id,
                             "name"           : drink.name,
