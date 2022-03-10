@@ -33,3 +33,4 @@ class DrinkImage(models.Model):
 
     class Meta:
         db_table = 'drink_images'
+
