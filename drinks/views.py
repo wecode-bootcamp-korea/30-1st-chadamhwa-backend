@@ -60,19 +60,19 @@ class FarmProductView(View):
         farms = Farm.objects.all()
 
         result = {
-                farm.name : {
-                    "farm_id"    : farm.id,
-                    "farm_name"  : farm.name,
-                        "drinks" : [{
+                "farm" : [{
+                    "id"       : farm.id,
+                    "name"  : farm.name,
+                    "drinks" : [
+                        {
                             "id"             : drink.id,
-                            "name"           : drink.name,
+                            "name"         : drink.name,
                             "price"          : drink.price,
                             "average_rating" : drink.average_rating,
                             "review_count"   : drink.review_count,
                             "image"          : drink.drinkimage_set.all().first().thumb_img,
-                    }  for drink in farm.drink_set.all().annotate(average_rating = Avg('review__rating'), review_count=Count('review'))
-                        .order_by(order_method)[offset:offset+limit]]
-            } for farm in farms
+                        }  for drink in farm.drink_set.all().annotate(average_rating = Avg('review__rating'), review_count=Count('review')).order_by(order_method)[offset:offset+limit]]
+            } for farm in farms]
         }
 
         return JsonResponse({'result':result}, status = 200)
